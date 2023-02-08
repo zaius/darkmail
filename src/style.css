@@ -1,0 +1,12 @@
+:root {
+  --background: #222831;
+  --background-two: #313135;
+  --background-three:  #393E46;
+  --foreground: #EEEEEE;
+  --apricot: #FAC9B8;
+  --link: #00ADB5;
+  --address: #ddd;
+}
+div[role="navigation"] {
+    display: none;
+}
