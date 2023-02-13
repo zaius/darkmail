@@ -1,12 +1,418 @@
+/* https://colorhunt.co/palette/222831393e4600adb5eeeeee */
+
 :root {
   --background: #222831;
   --background-two: #313135;
-  --background-three:  #393E46;
-  --foreground: #EEEEEE;
-  --apricot: #FAC9B8;
-  --link: #00ADB5;
+  --background-three: #393e46;
+  --foreground: #eeeeee;
+  --apricot: #fac9b8;
+  --link: #00adb5;
   --address: #ddd;
 }
-div[role="navigation"] {
-    display: none;
+div[role='navigation'] {
+  display: none;
+}
+
+/* attempt to override first page load - note to check these on popout / view full email
+ * pages */
+body:not(.aAU) {
+  background-color: var(--background-two) !important;
+}
+/*
+.bkK {
+  max-width: 1000px;
+  margin: auto;
+}
+*/
+
+.bkL,
+header {
+  background-color: var(--background-two) !important;
+}
+/* next and prev page buttons */
+.dI *[role='button'] {
+  filter: invert(100%);
+}
+/* clicking into next / prev sort */
+.J-M {
+  background-color: var(--background-two);
+}
+.J-M div[role='menuitem'] {
+  color: var(--foreground);
+}
+/* Labels at top of message */
+.ahR *[role='button'] {
+  background-color: var(--background-two) !important;
+}
+
+/* TODO: maybe use this?
+div[data-message-id]
+ */
+/* Action buttons at bottom of message */
+div[role='main'] table[role='presentation'] .nr {
+  background-color: var(--background);
+}
+div[role='main'] table[role='presentation'] .nr span {
+  color: var(--foreground);
+}
+div[role='main'] table[role='presentation'] .Bu,
+div[role='main'] table[role='presentation'] .iY {
+  background-color: var(--background);
+}
+div[role='main'] table[role='presentation'] .hx {
+  color: var(--foreground);
+}
+div[role='main'] table[role='presentation'] * {
+  _color: var(--foreground);
+  _background-color: var(--background);
+}
+/* calendar invitations left box */
+.aRi {
+  background: var(--background-three);
+}
+/* calendar invitations text */
+.aQ6 > .aQ5,
+.aQ6 > .aQ4,
+.aRo {
+  color: var(--foreground);
+}
+/* calendar buttons */
+.aRm div[role='button'] {
+  color: var(--link);
+}
+/* amazon order details box / flight details */
+.qY {
+  background: var(--background-three);
+  color: var(--foreground);
+}
+.qY .tk .tl {
+  filter: invert(100%);
+}
+.qY .t2 {
+  color: var(--address);
+}
+.qY .vL {
+  color: var(--address);
+}
+.qY .vU {
+  color: var(--foreground);
+}
+.qY a {
+  color: var(--link);
+}
+/* enable images / images are not displayed */
+.adp,
+.h9,
+.adI,
+.aHn {
+  background-color: var(--background-two);
+  color: var(--address);
+}
+/* enable images header links */
+.adI .B9,
+.h8 {
+  color: #aaf;
+}
+
+/* SECTION: Message content */
+
+/*
+ *[class*="msg-"] {
+   color:  var(--foreground) !important;
+ }
+ */
+/* In-message style overrides */
+/*
+div[role="main"] table[role="presentation"] *[style*="color"] {
+  color:  var(--foreground) !important;
+}
+ */
+
+*[class^='msg'] *[color='#000000'] {
+  color: var(--foreground) !important;
+}
+*[class^='msg'] *[bgcolor='#ffffff'] {
+  background-color: var(--background) !important;
+}
+*[class^='msg'] *[color*='#'],
+*[class^='msg'] *[style*='color'] {
+  color: var(--foreground) !important;
+}
+/* Why?! the msg class is missing in ups emails */
+.ii.gt *[bgcolor],
+.ii.gt *[style*='background'],
+.ii.gt *[style*='background-color'] {
+  background-color: var(--background) !important;
+}
+/* slightly off white backgrounds */
+.ii.gt *[style*='background-color: rgb(245, 245, 245)'],
+.ii.gt *[style*='background-color: rgb(230, 230, 230)'],
+.ii.gt *[bgcolor='#f9f6f4'] {
+  background-color: var(--background-two) !important;
+}
+/* keep non white backgrounds */
+.ii.gt *[bgcolor*='#7'] {
+  background-color: inherit !important;
+}
+
+/* .ii.gt *[color], */
+.ii.gt *[style*='color'],
+.ii.gt *[color='#000000'],
+.ii.gt *[style*='color:rgb(0,0,0'] {
+  color: var(--foreground) !important;
+}
+.ii.gt a[href] {
+  color: var(--link) !important;
+}
+/* Nicer boundary for unloaded images */
+.ii.gt img:not([src]) {
+  border: 1px solid var(--foreground);
+  border-top: 1px solid #888;
+  border-left: 1px solid #888;
+  background: var(--background-two);
+  text-align: center !important;
+  overflow: hidden;
+}
+*[class^='msg'] *[bgcolor],
+*[class^='msg'] *[style*='background'],
+*[class^='msg'] *[style*='background-color'] {
+  background-color: var(--background) !important;
+}
+/* ensure alt text is colored when images not displayed */
+*[class^='msg'] img {
+  color: var(--foreground) !important;
+}
+/* in message links */
+*[class^='msg'] a[href] {
+  color: var(--link) !important;
+}
+*[class^='msg'] a[style] {
+  color: var(--link) !important;
+}
+.hx .gD {
+  color: var(--address);
+}
+/* JS required - 1password emails have TDs with a background important */
+.ii.gt td[class*='mainContent'],
+.ii.gt td[class*='headerTitle'],
+.ii.gt td[class*='tableTitle'] {
+  background-color: var(--background) !important;
+}
+
+/* zoom emails */
+.ii.gt table[style*='color: rgb(57, 57, 77)'] {
+  color: var(--foreground) !important;
+}
+/* google cal */
+/*
+.ii.gt div [class*='primary-text'] {
+  color: var(--foreground) !important;
+}
+*/
+
+/* fucking tables everywhre */
+/* This breaks buttons in calendar invites
+  .hx table, .hx table td {
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+  }
+   */
+.hx .ii.gt h1,
+.hx .ii.gt h2,
+.hx .ii.gt h3,
+.hx .ii.gt h4,
+.hx .ii.gt h5,
+.hx .ii.gt h6 {
+  color: var(--apricot) !important;
+}
+/* Email subject */
+.ha > .hP {
+  color: var(--address);
+}
+/* from / to */
+.hx .hb {
+  color: var(--address);
+}
+
+/* timestamps */
+.ig .g3,
+.hI .g3,
+.iv .g3 {
+  color: var(--address);
+}
+/* Reply button */
+.gH.acX > .L3.bsQ {
+  color: var(--address);
+}
+/* Reply icons */
+.hk > .L3 {
+  _filter: invert(100%);
+}
+/* other icons */
+/* this messes up the next / prev 
+.AO *[role='button'] img,
+.AO img[role='button'] {
+  filter: invert(100%);
+}
+*/
+
+/* other emails */
+.ac2 {
+  color: var(--address);
+}
+.go {
+  color: var(--address);
+}
+
+/* purple reply read message text */
+.im {
+  color: #d090d0;
+}
+
+/* collapsed prior replies */
+.g6 {
+  color: #aaa;
+}
+
+/* Stars */
+/* .bi4 > .T-KT { */
+/* better to just apply to not starred so it keeps yellow */
+div[aria-label='Not starred'] {
+  filter: invert(100%);
+}
+
+/* popover when clicking the down arrow next to an email address */
+.ajA {
+  background-color: var(--background-two);
+  color: var(--foreground);
+}
+/* popover links */
+.ajA a {
+  color: var(--link);
+}
+
+/* new message - non reply */
+.nH.Hd {
+  background: var(--background);
+  color: var(--foreground);
+}
+.nH .aaZ {
+  background: var(--background);
+}
+/* icons in header */
+.nH.Hd .Ht img {
+  filter: invert(100%);
+}
+
+/* email addresses */
+.nH .aaZ span[email] {
+  color: var(--link);
+}
+/* email address with focus */
+.aGb {
+  background: var(--background-two);
+}
+.aGb div[role='option'] {
+  background: var(--background-two);
+  color: var(--link);
+}
+
+/* border between title and fields */
+.wO {
+  background-color: var(--background) !important;
+}
+
+/* new message title */
+.nH .Hy .m {
+  background: var(--background-two);
+}
+.Hp {
+  color: var(--foreground) !important;
+}
+.nH input {
+  background-color: transparent;
+  color: var(--foreground) !important;
+}
+
+/* New message */
+.GQ,
+.aoP .Ar,
+.Am {
+  background: var(--background-two);
+  color: var(--foreground);
+}
+/* new msg header */
+.IG {
+  background: var(--background-two);
+  color: var(--foreground);
+}
+.IG div[role='button'] {
+  color: var(--link);
+}
+.IG *[tabindex] {
+  color: var(--link);
+}
+/* Emails in replies before clicking in */
+.IG span[email] {
+  color: var(--link);
+}
+/* to field */
+.afV.ajf,
+.agP,
+.agh,
+.bbV {
+  background: var(--background-two);
+}
+/* new message - sticky footer */
+.aC2,
+.aC3,
+.aDj > .aDh,
+.HM .ahe::after {
+  background: var(--background-two);
+}
+.HM .ahe::before {
+  border-color: var(--background-three) !important;
+}
+
+/* new message footer buttons */
+/* aC2/aDh is undocked / half scrolled */
+.aDh,
+.aDg > .aDj {
+  background: var(--background-two);
+}
+.aDh *[data-tooltip],
+.aDg > .aDj *[data-tooltip] {
+  filter: invert(100%);
+}
+.IG *[role='button'] {
+  filter: invert(100%);
+}
+
+/* email search */
+#aso_search_form_anchor,
+.gb_Xe.gb_Ze,
+.aRp,
+.gssb_e,
+.gssb_m {
+  background-color: var(--background-three);
+  color: var(--foreground);
+}
+
+/* icon image map */
+div.gsoi {
+  filter: invert(100%);
+}
+
+/* historical search when first clicking into search bar */
+.aRp {
+  background-color: var(--background-three);
+  color: var(--foreground);
+}
+.aRp .H2 {
+  background-color: var(--apricot);
+}
+
+/* search when there's already a search and you've clicked into an email but then
+ * reclick search?! */
+.gssb_m {
 }

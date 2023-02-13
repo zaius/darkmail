@@ -72,6 +72,86 @@ window.__darkmail = {
   },
 };
 
+const nodeText = element => {
+  // Return the text of a node without the text from the children. e.g.
+  //   <div>foo <div>bar</div> foo</div>
+  // returns: foo foo
+  if (!element) {
+    return null;
+  }
+  if (!element.childNodes.length) {
+    return null;
+  }
+  return window.Array.from(element.childNodes)
+    .filter(el => el.nodeType === Node.TEXT_NODE)
+    .map(el => el.textContent)
+    .join('');
+};
+
+const background = el => {
+  if (!el) {
+    return null;
+  }
+  let bg = getComputedStyle(el).getPropertyValue('background-color');
+  if (bg === 'rgba(0, 0, 0, 0)') {
+    return background(el.parentNode);
+  }
+  return bg;
+};
+
+// https://stackoverflow.com/questions/9733288/how-to-programmatically-calculate-the-contrast-ratio-between-two-colors
+const luminance = rgbTriad => {
+  const a = rgbTriad.map(v => {
+    v /= 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+};
+
+const contrast = (rgb1, rgb2) => {
+  let lum1 = luminance(rgb1);
+  let lum2 = luminance(rgb2);
+  let brightest = Math.max(lum1, lum2);
+  let darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+};
+const rgbToArray = str =>
+  str
+    .match(/(\d+), (\d+), (\d+)/)
+    .slice(1)
+    .map(Number);
+
+const fixContrast = $message => {
+  log('Fixing contrast');
+  if (window.__darkmail?.contrast === false) {
+    log('Skipping');
+    return;
+  }
+  $message.querySelectorAll('.ii.gt div').forEach(el => {
+    const bg = rgbToArray(background(el));
+    const lum = luminance(bg);
+    if (lum < 0.8) {
+      return;
+    }
+    // 222831 => 34, 40, 49
+    // const newBg = bg.map(i => 255 - i).join(', ');
+    const newBg = [255 - bg[0] + 34, 255 - bg[1] + 40, 255 - bg[2] + 49].join(', ');
+    console.log('Luminance too high', lum, bg, newBg, el);
+    el.style.setProperty('background-color', `rgb(${newBg})`, 'important');
+  });
+
+  // Ameritrade uses font tags?!
+  $message.querySelectorAll('.ii.gt td, .ii.gt font').forEach(el => {
+    let con = contrast(
+      rgbToArray(background(el)),
+      rgbToArray(getComputedStyle(el).getPropertyValue('color'))
+    );
+    if (con < 4) {
+      console.log('Fixing contrast', con, el);
+      el.style.setProperty('color', '#eeeeee', 'important');
+    }
+  });
+};
 g.observe.on('view_thread', (...args) => {
   console.log('view thread', args);
 });
@@ -80,4 +160,7 @@ g.observe.on('view_thread', (...args) => {
 // time to update.
 g.observe.on('view_email', event => {
   console.log('view email', event);
+  setTimeout(() => {
+    fixContrast(event.$el[0]);
+  }, 0);
 });
