@@ -9,10 +9,32 @@
     "48": "icons/border-48.png"
   },
 
-  "content_scripts": [
-    {
-      "matches": ["*://*.mail.google.com/*"],
-      "js": ["dist/index.js"]
-    }
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "48": "icons/border-48.png"
+    },
+    "default_title": "Darkmail"
+  },
+
+  "background": {
+    "page": "dist/bg.html",
+    "persistent": false
+  },
+  "web_accessible_resources": [
+      "dist/style.css"
+  ],
+  "content_security_policy": "script-src 'self' https://localhost:5173; object-src 'self'",
+  "permissions": [
+    "notifications",
+    "webRequest",
+    "webNavigation",
+    "tabs",
+    "storage",
+    "activeTab",
+    "http://*/",
+    "https://*/",
+    "contextMenus",
+    "menus"
   ]
 }
