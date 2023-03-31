@@ -127,7 +127,11 @@ const fixContrast = $message => {
     log('Skipping');
     return;
   }
-  $message.querySelectorAll('.ii.gt div').forEach(el => {
+  $message.querySelectorAll('.ii.gt div, .ii.gt td, .ii.gt table').forEach(el => {
+    // Skip hidden elements
+    if (el.offsetParent === null) {
+      return;
+    }
     const bg = rgbToArray(background(el));
     const lum = luminance(bg);
     if (lum < 0.8) {
@@ -141,7 +145,10 @@ const fixContrast = $message => {
   });
 
   // Ameritrade uses font tags?!
-  $message.querySelectorAll('.ii.gt td, .ii.gt font').forEach(el => {
+  $message.querySelectorAll('.ii.gt td, .ii.gt font, .ii.gt p').forEach(el => {
+    if (el.offsetParent === null) {
+      return;
+    }
     let con = contrast(
       rgbToArray(background(el)),
       rgbToArray(getComputedStyle(el).getPropertyValue('color'))

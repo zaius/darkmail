@@ -62,10 +62,6 @@ div[role='main'] table[role='presentation'] .iY {
 div[role='main'] table[role='presentation'] .hx {
   color: var(--foreground);
 }
-div[role='main'] table[role='presentation'] * {
-  _color: var(--foreground);
-  _background-color: var(--background);
-}
 /* calendar invitations left box */
 .aRi {
   background: var(--background-three);
@@ -108,10 +104,31 @@ div[role='main'] table[role='presentation'] * {
   background-color: var(--background-two);
   color: var(--address);
 }
+/* image icon at atart of "images not displayed" banner */
+img.aeu {
+  filter: invert(100%);
+}
 /* enable images header links */
 .adI .B9,
 .h8 {
   color: #aaf;
+}
+
+/* translate languages header */
+.J-JN-M-I {
+  color: var(--address);
+}
+/* same but hovered */
+.J-JN-M-I.J-JN-M-I-JW {
+  color: var(--link);
+}
+/* icons */
+.hc,
+.adG {
+  filter: invert(100%);
+}
+.adH .adr {
+  filter: invert(100%);
 }
 
 /* SECTION: Message content */
@@ -248,6 +265,10 @@ div[role="main"] table[role="presentation"] *[style*="color"] {
 .hk > .L3 {
   _filter: invert(100%);
 }
+/* bottom of message - reply and forward icons inside buttons */
+.ams::before {
+  filter: invert(100%);
+}
 /* other icons */
 /* this messes up the next / prev 
 .AO *[role='button'] img,
@@ -274,6 +295,27 @@ div[role="main"] table[role="presentation"] *[style*="color"] {
   color: #aaa;
 }
 
+/**** EMAIL TITLE SUBJECT - right at the top, with print and open buttons, labels ***/
+/* Icons - ensure we don't apply in title in case of emojis */
+.nH.V8djrc.byY {
+}
+.nH.V8djrc.byY .ade img {
+  filter: invert(100%);
+}
+
+/**** EMAIL HEADER - email from address, received time, star, reply buttons ***/
+/* Icons - reply icon, 3 dots */
+.gE img[role='menu'],
+.gE img[role='button'],
+/* drop down arrow icon next to "to" address */
+.gE img.ajz {
+  filter: invert(100%);
+}
+
+/* popover after clicking into the dropdown arrow "to" address */
+.gs .aHq {
+  color: var(--link);
+}
 /* Stars */
 /* .bi4 > .T-KT { */
 /* better to just apply to not starred so it keeps yellow */
@@ -291,7 +333,7 @@ div[aria-label='Not starred'] {
   color: var(--link);
 }
 
-/* new message - non reply */
+/* compose new message - non reply - docked to bottom */
 .nH.Hd {
   background: var(--background);
   color: var(--foreground);
@@ -316,6 +358,11 @@ div[aria-label='Not starred'] {
   background: var(--background-two);
   color: var(--link);
 }
+/* from / to labels before addresses */
+.nH.Hd label,
+.nH.Hd *[aria-label] {
+  color: var(--foreground);
+}
 
 /* border between title and fields */
 .wO {
@@ -332,6 +379,11 @@ div[aria-label='Not starred'] {
 .nH input {
   background-color: transparent;
   color: var(--foreground) !important;
+}
+/* email address auto-complete popover */
+.afC {
+  background: var(--background-two);
+  color: var(--foreground);
 }
 
 /* New message */

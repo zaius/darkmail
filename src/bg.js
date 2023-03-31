@@ -1,14 +1,21 @@
+/* global browser */
 /* Background page for the extension. Visit the about:debugging page and inspect to see
  * the logs */
 const log = (...args) => {
   console.log('%c DARKMAIL: ', 'background: #343F53; color: #36CEFF;', ...args);
 };
 
-log('Darkmail bg.js loaded');
+const URLS = [
+  'https://mail.google.com/mail/u/0/*',
+  'https://mail.google.com/mail/u/1/*',
+  'https://icanhazip.com/*',
+];
 
 const generateToken = (length = 16) => {
   return [...Array(length)].map(() => Math.random().toString(36)[2]).join('');
 };
+
+let enabledTabs = {};
 
 // This should work, but doesn't?? the error fires but doesn't have a reason
 //   const s = document.createElement('script');
@@ -17,11 +24,11 @@ const generateToken = (length = 16) => {
 //   s.addEventListener('error', err => console.log('script load error', err));
 //   const firstScript = document.getElementsByTagName('script')[0];
 //   firstScript.parentNode.insertBefore(s, firstScript);
-const install = async tab => {
+const install = async tabId => {
   let token = generateToken();
-  log('Installing on tab', tab.id);
+  log('Installing on tab', tabId);
   try {
-    await browser.tabs.executeScript(tab.id, {
+    await browser.tabs.executeScript(tabId, {
       // file: 'https://localhost:5173/ext.js',
       // file: '/dist/ext.js',
       // runAt: 'document_end',
@@ -44,100 +51,154 @@ const install = async tab => {
       })();
     `,
     });
+    enabledTabs[tabId] = true;
   } catch (err) {
     log('Error executing script', err);
     console.error(browser.runtime.lastError);
   }
 };
-const remove = async tab => {
-  log('Removing on tab', tab.id);
+const remove = async tabId => {
+  log('Removing on tab', tabId);
   // Why oh why do i have to wrap this in an eval?! the window.__darkmail (and all
   // window level globals) aren't accessible...
-  await browser.tabs.executeScript(tab.id, {
+  await browser.tabs.executeScript(tabId, {
     code: `
       (function() {
         window.eval("console.log('Disabling', window, window.__darkmail, window.FOO); window.__darkmail?.disable();");
       })()`,
   });
+  enabledTabs[tabId] = false;
 };
 
-// if (import.meta.hot) {
-if (true) {
-  log('hot');
-  // import('/@vite/client');
-  browser.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url }) => {
-    console.log('URL', url);
-    if (url === 'https://icanhazip.com/' || url.startsWith('https://mail.google.com')) {
+(async () => {
+  log('Darkmail bg.js loaded');
+
+  try {
+    enabledTabs = (await browser.storage.local.get()).enabledTabs || {};
+  } catch (err) {
+    log('Error parsing existing state', await browser.storage.local.get());
+  }
+
+  // if (import.meta.hot) {
+  if (true) {
+    log('hot');
+    // import('/@vite/client');
+  } else {
+    log('not hot');
+  }
+  //});
+  log('Listener installed', enabledTabs);
+
+  const stateColors = {
+    on: {
+      text: 'Y',
+      backgroundColor: 'green',
+      textColor: 'white',
+    },
+    off: {
+      text: 'N',
+      backgroundColor: 'red',
+      textColor: 'white',
+    },
+  };
+
+  const isActive = tabId => {
+    return enabledTabs[tabId];
+  };
+  const updateBadge = async () => {
+    const tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
+    const isEnabled = enabledTabs[tab.id];
+
+    let colors;
+    if (isEnabled) {
+      colors = stateColors.on;
     } else {
+      colors = stateColors.off;
+    }
+    browser.browserAction.setBadgeText({ text: colors.text });
+    browser.browserAction.setBadgeBackgroundColor({ color: colors.backgroundColor });
+    browser.browserAction.setBadgeTextColor({ color: colors.textColor });
+  };
+
+  const setActive = async (tabId, newState) => {
+    log('-- SET ACTIVE', {
+      tabId,
+      enabledTabs,
+      newState,
+      oldState: enabledTabs[tabId],
+    });
+    // const tab = await browser.tabs.get(tabId);
+
+    if (newState === isActive(tabId)) {
       return;
     }
-    console.log('adding listener', frameId, url);
-    const tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
-    install(tab);
+    if (newState) {
+      await install(tabId);
+    } else {
+      await remove(tabId);
+    }
+    await updateBadge();
+    browser.storage.local.set({ enabledTabs });
+  };
+
+  browser.browserAction.onClicked.addListener(() => {
+    log('-- BROWSER: ON CLICKED');
+    (async () => {
+      const tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
+      await setActive(tab.id, !isActive(tab.id));
+    })();
   });
-} else {
-  log('not hot');
-}
-//});
-log('Listener installed');
 
-let enabledTabs = {};
-
-const toggleActive = async (tabId, keep) => {
-  if (!keep) {
-    enabledTabs[tabId] = !enabledTabs[tabId];
-  }
-  const enabled = enabledTabs[tabId];
-  const tab = await browser.tabs.get(tabId);
-  log('onClicked', tab);
-  if (enabled) {
-    browser.browserAction.setBadgeText({ text: 'Y' });
-    browser.browserAction.setBadgeBackgroundColor({ color: 'green' });
-    browser.browserAction.setBadgeTextColor({ color: 'white' });
-    install(tab);
-  } else {
-    browser.browserAction.setBadgeText({ text: 'N' });
-    browser.browserAction.setBadgeBackgroundColor({ color: 'red' });
-    browser.browserAction.setBadgeTextColor({ color: 'white' });
-    remove(tab);
-  }
-
-  log('browserAction onclick!', window);
-};
-
-browser.browserAction.onClicked.addListener(() => {
-  (async () => {
-    const tab = (await browser.tabs.query({ currentWindow: true, active: true }))[0];
-    await toggleActive(tab.id);
-  })();
-});
-
-browser.tabs.onActivated.addListener(activeInfo => {
-  (async () => {
-    await toggleActive(activeInfo.tabId, true);
-  })();
-});
-
-browser.runtime.onInstalled.addListener(() => {
-  log('Installing');
-  browser.menus.create({
-    id: 'darkmail-button',
-    title: 'Enable Darkmail',
-    contexts: ['selection'],
+  browser.tabs.onActivated.addListener(({ tabId, previousTabId, windowId }) => {
+    log('-- TABS: ON ACTIVATED', { tabId, previousTabId, windowId });
+    updateBadge();
   });
-  browser.menus.onClicked.addListener((info, tab) => {
+
+  // check for navigation / refresh
+  browser.webNavigation.onCommitted.addListener(async ({ tabId, frameId, url }) => {
+    if (frameId !== 0) {
+      return;
+    }
+    log('-- NAVIGATION: ON COMMITTED', { tabId, frameId, url });
+    console.log('URL', url);
+    const urlMatch = URLS.find(pattern => url.match(pattern));
+    if (!urlMatch) {
+      return;
+    }
+    if (enabledTabs[tabId]) {
+      install(tabId);
+    }
+  });
+
+  browser.runtime.onInstalled.addListener(() => {
+    (async () => {
+      log('-- RUNTIME: ON INSTALLED');
+      browser.menus.create({
+        id: 'darkmail-button',
+        title: 'Enable Darkmail',
+        contexts: ['selection'],
+      });
+      const tabs = await browser.tabs.query({
+        url: URLS,
+      });
+      log('tabs are', tabs);
+      tabs.forEach(tab => {
+        enabledTabs[tab.id] = false;
+      });
+
+      updateBadge();
+
+      log('Installing: DONE');
+    })();
+  });
+
+  browser.menus.onClicked.addListener((info, _tab) => {
+    log('-- MENUS: ON CLICKED');
     if (info.menuItemId === 'darkmail-button') {
       console.log('darkmail click', info.selectionText);
     }
   });
-  log('Installing: DONE');
-});
 
-browser.webNavigation.onCommitted.addListener(({ tabId, frameId, url }) => {
-  log('Listener called', tabId, frameId, url);
-  // Filter out non main window events.
-  if (frameId !== 0) {
-    log('aborting frame', frameId);
-    return;
-  }
-});
+  log('Install complete');
+  updateBadge();
+})();

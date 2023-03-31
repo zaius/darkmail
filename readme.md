@@ -26,4 +26,3 @@ Font contrast extension: https://github.com/Fushko/font-contrast/blob/master/src
 Gmail.js - what a blessing! https://github.com/kartiktalwar/gmail.js#
 
 A vite webext example doing similar HMR loading - https://github.com/antfu/vitesse-webext
-
